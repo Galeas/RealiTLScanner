@@ -21,6 +21,7 @@ var timeout int
 var verbose bool
 var enableIPv6 bool
 var url string
+var targetTLSVersion string
 
 func main() {
 	_ = os.Unsetenv("ALL_PROXY")
@@ -38,6 +39,7 @@ func main() {
 	flag.BoolVar(&enableIPv6, "46", false, "Enable IPv6 in additional to IPv4")
 	flag.StringVar(&url, "url", "", "Crawl the domain list from a URL, "+
 		"e.g. https://launchpad.net/ubuntu/+archivemirrors")
+	flag.StringVar(&targetTLSVersion, "tls", "", "Filter scan results to a specific TLS version, e.g., 1.2 or 1.3")
 	flag.Parse()
 	if verbose {
 		slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
@@ -61,7 +63,7 @@ func main() {
 			return
 		}
 		defer f.Close()
-		_, _ = f.WriteString("IP,ORIGIN,CERT_DOMAIN,CERT_ISSUER,GEO_CODE\n")
+		_, _ = f.WriteString("IP,ORIGIN,CERT_DOMAIN,CERT_ISSUER,TLS_VER,GEO_CODE\n")
 		outWriter = f
 	}
 	var hostChan <-chan Host
